@@ -29,13 +29,19 @@ export const messageReceived = (payload: Message) => ({
   payload
 }) as const
 
+export const tokenReceived = (payload: string) => ({
+  type: 'TOKEN_RECEIVED',
+  payload
+}) as const
+
 export const actions = {
   updateHost,
   updateUser,
   updatePassword,
   clearMessages,
   showRowDetails,
-  messageReceived
+  messageReceived,
+  tokenReceived
 };
 
 export type Action = ReturnType<typeof actions[keyof typeof actions]>

@@ -9,7 +9,7 @@ export type ConnectStateProps = {
   updateHost: (payload: string) => Record<string, unknown>;
   updateUser: (payload: string) => Record<string, unknown>;
   updatePassword: (payload: string) => Record<string, unknown>;
-  onLogin: (payload: string) => Record<string, unknown>;
+  onLogin: (payload: string) => Promise<Record<string, unknown>>;
   host: string;
   user: string;
   password: string;

@@ -1,5 +1,4 @@
 import { Reducer } from 'redux'
-
 import { SessionState } from "../config/state"
 import { Action } from "../actions"
 
@@ -9,6 +8,7 @@ export const INITIAL_STATE: SessionState = {
   host: '',
   user: '',
   password: '',
+  token:''
 };
 
 export const sessionReducer: Reducer<SessionState, Action> = (state = INITIAL_STATE, action) => {
@@ -25,6 +25,8 @@ export const sessionReducer: Reducer<SessionState, Action> = (state = INITIAL_ST
       return { ...state, message: action.payload };
     case 'MESSAGE_RECEIVED':
       return { ...state, messages: [...state.messages, action.payload] };
+    case 'TOKEN_RECEIVED':
+      return { ...state, token: action.payload };
     default:
       return state;
   }

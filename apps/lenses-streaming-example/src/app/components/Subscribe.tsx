@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import classnames from "classnames";
 import { actions } from "../actions";
@@ -7,6 +7,8 @@ import { Message, State } from "../config/state";
 
 export type SubscribeStateProps = {
   messages: Message[];
+  token: string;
+  messageReceived: (payload: string) => Record<string, unknown>;
 };
 
 export type SubscribeProps = {
@@ -15,22 +17,44 @@ export type SubscribeProps = {
 
 const _Subscribe: React.FC<SubscribeProps & SubscribeStateProps> = ({
   messages,
+  token,
   clearMessages,
+  messageReceived
 }) => {
   const [sqls, setSqlState] = useState("");
+   let noOfMessages = 0;
 
   const onSqlsChange = (event:React.SyntheticEvent<HTMLTextAreaElement>) => {
     const target = event.currentTarget;
     const value = target.value;
-
     setSqlState(value);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onSubscribe = () => {};
+  const onSubscribe = async () => { 
+    const client = new WebSocket(`ws://localhost:3030/api/ws/v2/sql/execute`);
+    const obj = {
+      "token": token,
+      "stats": 2,
+      "sql": sqls,
+      "live": false
+    }
+    client.onopen= () => client.send(JSON.stringify(obj));
+    
+    client.onmessage = (m:any) => {
+      const msgData = JSON.parse(m.data);
+      const {data} = msgData;
+      if(noOfMessages > 10){
+        client.close();
+      }else{
+        noOfMessages++;
+        messageReceived(data);
+      }
+    }
+};
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onUnsubscribe = (topic:string) => {};
+  const onUnsubscribe = (topic:string) => {topic};
 
   const btnStyle = classnames("button is-small is-info");
 
@@ -75,6 +99,7 @@ const _Subscribe: React.FC<SubscribeProps & SubscribeStateProps> = ({
 
 const mapStateToProps = (state:State) => ({
   messages: state.session.messages,
+  token: state.session.token || ''
 });
 
 const mapDispatchToProps = {

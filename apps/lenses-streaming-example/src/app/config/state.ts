@@ -9,6 +9,7 @@ export type SessionState = {
     user: string;
     password: string;
     message?: Message;
+    token?:string;
 }
 
 export type State = {
